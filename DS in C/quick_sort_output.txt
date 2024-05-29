@@ -1,0 +1,10 @@
+10	Employee10	52334.00
+3	Employee3	55537.00
+8	Employee8	56132.00
+6	Employee6	57882.00
+7	Employee7	60529.00
+1	Employee1	60633.00
+2	Employee2	64356.00
+9	Employee9	64560.00
+4	Employee4	72558.00
+5	Employee5	73333.00

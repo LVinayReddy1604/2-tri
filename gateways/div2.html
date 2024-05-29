@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <link rel="stylesheet" href="styles.css"> -->
+    <title>Starlight Flag Pursuit</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.waves.min.js"
+    />
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS',
+          sans-serif;
+      }
+      #anim_globe {
+        z-index: -6;
+
+        width: 100%;
+        height: 100vh;
+
+        background-color: #000000;
+
+        position: fixed;
+        top: 0;
+      }
+
+      .sec-un {
+        height: 100vh;
+        margin-left: 40px;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        position: relative;
+      }
+      .vanta-net-container {
+        height: 100%;
+        width: 100%;
+
+        position: absolute;
+        top: 0;
+      }
+      #anim_net {
+        z-index: -5;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+      }
+      .sec-deux {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .heading-primary {
+        font-size: 4rem;
+        color: #fff;
+        font-family: 'Courier New', Courier, monospace;
+        width: 500px;
+      }
+
+      .btn-login {
+        padding: 12px 16px;
+        margin-left: 10px;
+        background: transparent;
+        outline: none;
+        border: 1px solid #fff;
+        color: #fff;
+        letter-spacing: 0.8px;
+        width: 160px;
+        border-radius: 10px;
+      }
+
+      .btn-login:hover {
+        background-color: #fff;
+        color: #000000;
+        transition: all 1s;
+      }
+      .sec-logo {
+        height: 120px;
+        width: 120px;
+        margin-top: -50px;
+      }
+      .sec-description {
+        height: 35vh;
+        color: #ffffff;
+        margin: 0 50px;
+      }
+      .heading-secondary {
+        font-size: 2.5rem;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+      }
+      .heading-secondary {
+        -webkit-text-fill-color: transparent;
+        -webkit-animation: navbarUnderlay 5s ease infinite;
+        animation: navbarUnderlay 5s ease infinite;
+        background: linear-gradient(90deg, #fe7c62, #f33456, #974de0);
+        background-size: auto;
+        background-clip: border-box;
+        -webkit-background-clip: text;
+        background-size: 200% 200%;
+        color: #fff;
+        display: inline-block;
+        font-size: 60px;
+        letter-spacing: 15px;
+        overflow-y: hidden;
+        margin-left: 50px;
+        margin-bottom: 50px;
+      }
+      .sec-text {
+        margin-top: 20px;
+        font-size: 16px;
+        letter-spacing: 0.5px;
+        color: #fff;
+        text-align: justify;
+        font-family: 'Poppins', sans-serif;
+        letter-spacing: 2px;
+        font-size: 24px;
+        line-height: 35px;
+      }
+      .list-item {
+        margin-bottom: 0px;
+        margin-left: -15px;
+        color: #fff;
+        text-align: justify;
+        font-family: 'Poppins', sans-serif;
+        letter-spacing: 2px;
+        font-size: 24px;
+        line-height: 35px;
+      }
+      .subsec {
+        margin-bottom: 100px;
+      }
+      .abt {
+        margin-top: -50px;
+        margin-bottom: 20px;
+      }
+      .flag{
+        margin-left:100px;
+        height:120px;
+        width:120px;
+      }
+
+      @media (max-width: 425px) {
+        body {
+          overflow-x: hidden;
+        }
+        #anim_globe {
+          height: 100%;
+        }
+        .vanta-net-container {
+          height: 100%;
+          width: 100%;
+          position: absolute;
+          top: 0;
+        }
+        #anim_net {
+          height: 100%;
+        }
+        .sec-un {
+          padding: 10px;
+        }
+        .sec-logo {
+          height: 60px;
+          width: 60px;
+          margin-top: -10px;
+        }
+        .heading-primary {
+          font-size: 1.2rem;
+          width: 150px;
+        }
+
+        .btn-login {
+          width: 150px;
+          margin-left: -10px;
+        }
+        .heading-secondary {
+          font-size: 1.5rem;
+          letter-spacing: 10px;
+          weight: 10;
+          margin-bottom: 5px;
+        }
+        .sec-text {
+          font-size: 12px;
+          line-height: 18px;
+        }
+        .list-item {
+          font-size: 12px;
+          line-height: 18px;
+          margin-left: -30px;
+        }
+        .subsec {
+          margin-bottom: 50px;
+        }
+        .list-sec {
+          margin-top: 120px;
+        }
+        .des-sec{
+          margin-top:20px;
+        }
+        .flag{
+          position: absolute;
+          right:30px;
+          top:150px;
+          height:40px;
+          width:40px;
+        }
+      }
+    </style>
+    <style>
+      :root {
+        --animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+        --animation-duration: 1s;
+      }
+
+      // Keyframes
+      // ---------
+      @keyframes slideInUp {
+        0% {
+          opacity: 0;
+          transform: translateY(25%);
+        }
+        100% {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes slideInDown {
+        0% {
+          opacity: 0;
+          transform: translateY(-25%);
+        }
+        100% {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes slideInleft {
+        0% {
+          opacity: 0;
+          transform: translateX(25%);
+        }
+        100% {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes slideInRight {
+        0% {
+          opacity: 0;
+          transform: translateX(-25%);
+        }
+        100% {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes zoomIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.75);
+        }
+        100% {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      @keyframes zoomReverseIn {
+        0% {
+          opacity: 0;
+          transform: scale(1.25);
+        }
+        100% {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      @keyframes flipInY {
+        0% {
+          opacity: 0;
+          transform: perspective(90vw) rotateY(67.5deg);
+        }
+        100% {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      [data-animation] {
+        opacity: 0;
+        animation-timing-function: var(--animation-timing-function);
+        animation-fill-mode: both;
+        animation-duration: var(--animation-duration);
+        will-change: transform, opacity;
+      }
+      .animations-disabled {
+        &,
+        [data-animation] {
+          animation: none !important;
+          opacity: 1 !important;
+        }
+      }
+      .slideInUp {
+        animation-name: slideInUp;
+      }
+      .slideInDown {
+        animation-name: slideInDown;
+      }
+      .slideInLeft {
+        animation-name: slideInleft;
+      }
+      .slideInRight {
+        animation-name: slideInRight;
+      }
+
+      .fadeIn {
+        animation-name: fadeIn;
+      }
+
+      .zoomIn {
+        animation-name: zoomIn;
+      }
+      .zoomReverseIn {
+        animation-name: zoomReverseIn;
+      }
+
+      .flipInY {
+        animation-name: flipInY;
+      }
+      .flipOutY {
+        animation-name: flipInY;
+        animation-direction: reverse;
+      }
+      .zoomIn {
+        animation-name: zoomIn;
+      }
+      .zoomReverseIn {
+        animation-name: zoomReverseIn;
+      }
+      .box {
+        width: 7rem;
+        height: 7rem;
+        margin: 1rem;
+        background: radial-gradient(
+          circle at top right,
+          hsl(340, 80%, 50%),
+          hsl(260, 80%, 50%)
+        );
+        border-radius: 1.5rem;
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3) inset,
+          0 3px 9px rgba(0, 0, 0, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="anim_globe"></div>
+
+    <section class="sec-un" data-animation="slideInRight">
+      <img src="gw_big.png" alt="logo" class="sec-logo" />
+      <h1 class="heading-primary">Starlight Flag Pursuit</h1>
+      <button class="btn-login">Login / Signup</button>
+    </section>
+
+    <section class="sec-deux">
+      <div class="vanta-net-container">
+        <div id="anim_net"></div>
+      </div>
+
+      <div data-animation="fadeIn" data-animation-delay="300ms">
+        <div class="subsec des-sec">
+          <h2 class="heading-secondary des" style="">Description</h2>
+          <p class="sec-text sec-description" style="">
+            It's a mission where you hack into alien spaceships and freeze their
+            secrets before they blast you into galactic dust. Use your celestial
+            talents to find the hidden flags and unlock the riddles of the
+            universe. But be cautious; Aliens are not genial and have their own
+            strategies to counter you. Could you dodge them and capture the
+            flag? Or will you end up as space debris? In the celestial challenge
+            of our event, the crew harnessing the maximum number of space flags
+            captured against the alien through the galaxies of competition to
+            claim their way to victory among the stars shall emerge as the
+            ultimate Galactic CTF Championship.
+          </p>
+        </div>
+      </div>
+
+      <div data-animation="fadeIn" data-animation-delay="300ms">
+        <div class="subsec list-sec">
+          <h2 class="heading-secondary list" style="">
+            Instructions & Rubrics<img class="flag" src="flag.gif"/>
+          </h2>
+          <ul class="sec-list sec-description">
+            <li class="list-item">
+              Participation is to be done in the form of teams of two.
+            </li>
+            <li class="list-item">
+              All registrations are to be done prior to the event, NO ON-SPOT
+              REGISTRATION.
+            </li>
+            <li class="list-item">
+              The team with the maximum points will be the winners.
+            </li>
+            <li class="list-item">
+              In case of a tie, we will give another set of challenges to decide
+              on the winners.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div data-animation="fadeIn" data-animation-delay="300ms">
+        <div class="subsec abt-sec">
+          <h2 class="heading-secondary abt">About Gateways</h2>
+          <p class="sec-text sec-description">
+            Gateways 2023, the national level intercollegiate IT fest, is being
+            organized by the Department of Computer Science, CHRIST (Deemed to
+            be University) on the 7th and 8th of December 2023. The two-day
+            extravaganza provides a platform for postgraduate students to
+            showcase their talents in various fields. The theme for this year's
+            Gateways 2023 is "Code Cosmos" consisting of numerous technical and
+            non-technical events along with a surprise event. The department
+            will also be publishing the 2023 edition of INFOBAHN, a bi-annual
+            magazine, during the fest.
+          </p>
+        </div>
+      </div>
+    </section>
+    <!-- All the libraries needed from Vanta.js (Globe & Net) -->
+    <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.21/vendor/three.r119.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/tengbao/vanta@master/dist/vanta.net.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.21/dist/vanta.globe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
+
+    <!-- <script src="script.js"></script> -->
+    <script>
+      gsap.registerPlugin(CustomEase);
+      VANTA.GLOBE({
+        //Add the id of your tag with the # before
+        el: '#anim_globe',
+        //All the controles for the user
+        mouseControls: true,
+        touchControls: false,
+        gyroControls: false,
+        //Control the min-size of the animation
+        minHeight: 500.0,
+        minWidth: 500.0,
+        //Modify the sizing
+        scale: 1.0,
+        scaleMobile: 1.0,
+        size: 0.9,
+        //Customise the colors
+        color2: 0xf2dd1b,
+        color: 0xffffff,
+        backgroundColor: 0x000000,
+      });
+
+      VANTA.NET({
+        //Add the id of your tag with the # before
+        el: '#anim_net',
+        //All the controles for the user
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        //Control the min-size of the animation
+        minHeight: 200.0,
+        minWidth: 200.0,
+        //Modify the sizing
+        scale: 2.0,
+        scaleMobile: 2.0,
+        //Customise the colors
+        color: 0x05f2db,
+        backgroundColor: 0x081e26,
+
+        //Customise the dots
+        points: 6.0,
+        maxDistance: 19.0,
+        spacing: 20.0,
+      });
+      var tl = new TimelineMax();
+      gsap.to('.sec-logo', {
+        duration: 1,
+        scale: 1.3,
+        ease: 'elastic.inOut',
+        yoyo: true,
+        repeat: 1,
+      });
+    </script>
+
+    <!--Scroll Animation-->
+    <script>
+      const AnimateOnScroll = function ({ offset } = { offset: 10 }) {
+        // Define a dobra superior, inferior e laterais da tela
+        const windowTop = (offset * window.innerHeight) / 100;
+        const windowBottom = window.innerHeight - windowTop;
+        const windowLeft = 0;
+        const windowRight = window.innerWidth;
+
+        this.start = (element) => {
+          window.requestAnimationFrame(() => {
+            // Seta os atributos customizados
+            element.style.animationDelay = element.dataset.animationDelay;
+            element.style.animationDuration = element.dataset.animationDuration;
+
+            // Inicia a animacao setando a classe para animar
+            element.classList.add(element.dataset.animation);
+
+            // Seta o elemento como animado
+            element.dataset.animated = 'true';
+          });
+        };
+
+        this.inViewport = (element) => {
+          // Obtem o boundingbox do elemento
+          const elementRect = element.getBoundingClientRect();
+          const elementTop =
+            elementRect.top + parseInt(element.dataset.animationOffset) ||
+            elementRect.top;
+          const elementBottom =
+            elementRect.bottom - parseInt(element.dataset.animationOffset) ||
+            elementRect.bottom;
+          const elementLeft = elementRect.left;
+          const elementRight = elementRect.right;
+
+          // Verifica se o elemento esta na tela
+          return (
+            elementTop <= windowBottom &&
+            elementBottom >= windowTop &&
+            elementLeft <= windowRight &&
+            elementRight >= windowLeft
+          );
+        };
+
+        // Percorre o array de elementos, verifica se o elemento está na tela e inicia animação
+        this.verifyElementsInViewport = (els = elements) => {
+          for (let i = 0, len = els.length; i < len; i++) {
+            // Passa para o proximo laço se o elemento ja estiver animado
+            if (els[i].dataset.animated) continue;
+
+            this.inViewport(els[i]) && this.start(els[i]);
+          }
+        };
+
+        // Obtem todos os elementos a serem animados
+        this.getElements = () =>
+          document.querySelectorAll('[data-animation]:not([data-animated])');
+
+        // Atualiza a lista de elementos a serem animados
+        this.update = () => {
+          elements = this.getElements();
+          elements && this.verifyElementsInViewport(elements);
+        };
+
+        // Inicia os eventos
+        window.addEventListener('load', this.update, false);
+        window.addEventListener(
+          'scroll',
+          () => this.verifyElementsInViewport(elements),
+          { passive: true }
+        );
+        window.addEventListener(
+          'resize',
+          () => this.verifyElementsInViewport(elements),
+          { passive: true }
+        );
+      };
+
+      // Initialize
+      const options = {
+        offset: 15, // percentage of the window
+      };
+
+      const animation = new AnimateOnScroll(options);
+    </script>
+  </body>
+</html>

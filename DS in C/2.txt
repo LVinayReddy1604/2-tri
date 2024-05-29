@@ -1,0 +1,1776 @@
+================Lab-10==============================
+#include <stdio.h>
+#include <stdbool.h>
+#define MAX_VERTICES 100
+#define MAX 9999
+
+typedef struct {
+    int u, v, weight;
+} Edge;
+
+// Function declarations
+void primMST(int graph[MAX_VERTICES][MAX_VERTICES], int V);
+void kruskalMST(int graph[MAX_VERTICES][MAX_VERTICES], int V);
+int find(int parent[], int i);
+void unionSets(int parent[], int x, int y);
+
+int main() {
+    int graph[MAX_VERTICES][MAX_VERTICES];
+    int V, E, i, j;
+
+    printf("Enter the number of vertices and edges: ");
+    scanf("%d %d", &V, &E);
+
+    // Initialize the matrix with zeros
+    for (i = 0; i < V; ++i)
+        for (j = 0; j < V; ++j)
+            graph[i][j] = 0;
+
+    printf("Enter the edges (src dest weight) for each edge:\n");
+    for (i = 0; i < E; ++i) {
+        int src, dest, weight;
+        scanf("%d %d %d", &src, &dest, &weight);
+
+        // For undirected graph, add the weight to both src-dest and dest-src
+        graph[src - 1][dest - 1] = weight;
+        graph[dest - 1][src - 1] = weight;
+    }
+
+    // Display the graph matrix
+    printf("\nGraph Matrix:\n");
+    for (i = 0; i < V; ++i) {
+        for (j = 0; j < V; ++j)
+            printf("%d\t", graph[i][j]);
+        printf("\n");
+    }
+
+    // Perform Prim's algorithm and display the MST details
+    primMST(graph, V);
+
+    // Perform Kruskal's algorithm and display the MST details
+    kruskalMST(graph, V);
+
+    return 0;
+}
+
+// Prim's Algorithm
+void primMST(int graph[MAX_VERTICES][MAX_VERTICES], int V) {
+    int parent[V];
+    int key[V];
+    bool mstSet[V];
+    int i, count, v;
+
+    // Initialize key values and mstSet
+    for (i = 0; i < V; ++i) {
+        key[i] = MAX;
+        mstSet[i] = false;
+    }
+
+    key[0] = 0; // Start from the first vertex
+
+    for (count = 0; count < V - 1; ++count) {
+        int u, minKey = MAX;
+
+        // Find the vertex with the minimum key value
+        for (v = 0; v < V; ++v) {
+            if (!mstSet[v] && key[v] < minKey) {
+                minKey = key[v];
+                u = v;
+            }
+        }
+
+        mstSet[u] = true;
+
+        // Update key values and parent for adjacent vertices
+        for (v = 0; v < V; ++v) {
+            if (graph[u][v] && !mstSet[v] && graph[u][v] < key[v]) {
+                parent[v] = u;
+                key[v] = graph[u][v];
+            }
+        }
+    }
+
+    // Display the details of MST obtained from Prim's Algorithm
+    printf("\nPrim's Algorithm MST:\n");
+    for (i = 1; i < V; ++i)
+        printf("%d -- %d\tWeight: %d\n", parent[i], i, graph[i][parent[i]]);
+}
+
+// Kruskal's Algorithm
+void kruskalMST(int graph[MAX_VERTICES][MAX_VERTICES], int V) {
+    Edge edges[V * V];
+    int e = 0;
+    int i, j, k, l, v;
+
+    // Extract edges from the adjacency matrix
+    for (i = 0; i < V; ++i)
+        for (j = 0; j < V; ++j)
+            if (graph[i][j] != 0) {
+                edges[e].u = i;
+                edges[e].v = j;
+                edges[e].weight = graph[i][j];
+                ++e;
+            }
+
+    // Sort edges in non-decreasing order of weight
+    for (j = 0; j < e - 1; ++j)
+        for (k = 0; k < e - j - 1; ++k)
+            if (edges[k].weight > edges[k + 1].weight) {
+                // Swap the edges
+                Edge temp = edges[k];
+                edges[k] = edges[k + 1];
+                edges[k + 1] = temp;
+            }
+
+    // Create a parent array for union-find
+    int parent[V];
+    for (v = 0; v < V; ++v)
+        parent[v] = v;
+
+    i = 0;
+
+    printf("Kruskal's Algorithm\n");
+    while (i < e) {
+        int u = edges[i].u;
+        int v = edges[i].v;
+        int weight = edges[i].weight;
+
+        int x = find(parent, u);
+        int y = find(parent, v);
+
+        if (x != y) {
+            printf("%d -- %d\tWeight: %d\n", u, v, weight);
+            unionSets(parent, x, y);
+        }
+
+        ++i;
+    }
+}
+
+// Helper functions for union-find
+int find(int parent[], int i) {
+    while (parent[i] != i)
+        i = parent[i];
+    return i;
+}
+
+void unionSets(int parent[], int x, int y) {
+    int xroot = find(parent, x);
+    int yroot = find(parent, y);
+    parent[xroot] = yroot;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=====================LAB-9=============
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+
+#define MAX_VERTICES 20
+#define MAX_EDGES 20
+
+int adj[MAX_VERTICES][MAX_VERTICES], n, m, q[MAX_VERTICES], visited[MAX_VERTICES], f = -1, r = -1;
+
+struct edge {
+    int s, d;
+};
+
+struct edge e[MAX_EDGES];
+
+void createadjmatrix(struct edge e[]) {
+    int i, x,j, y;
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            adj[i][j] = 0;
+        }
+    }
+
+    for (i = 0; i < m; i++) {
+        x = e[i].s;
+        y = e[i].d;
+        adj[x][y] = 1;
+        adj[y][x] = 1;
+    }
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++)
+            printf("%d ", adj[i][j]);
+        printf("\n");
+    }
+}
+
+void bfs(int v) {
+    int i;
+    for (i = 0; i < n; i++) {
+        if (adj[v][i] != 0 && visited[i] == 0) {
+            r = r + 1;
+            q[r] = i;
+            visited[i] = 1;
+            printf("%d  ", i);
+        }
+    }
+    f = f + 1;
+    if (f <= r)
+        bfs(q[f]);
+}
+
+void dfs(int v) {
+    int i;
+    for (i = 0; i < n; i++) {
+        if (adj[v][i] != 0 && visited[i] == 0) {
+            visited[i] = 1;
+            printf("%d  ", i);
+            dfs(i);
+        }
+    }
+}
+
+int main() {
+    int v,i;
+    char ch = 'y';
+    m = 0;
+    printf("Enter no of vertices: ");
+    scanf("%d", &n);
+
+    while (ch == 'y' && m < MAX_EDGES) {
+        printf("Enter source of edge: ");
+        scanf("%d", &e[m].s);
+        printf("Enter destination of edge: ");
+        scanf("%d", &e[m].d);
+        m++;
+        printf("Do you want to add more edges? (y/n): ");
+        fflush(stdin);
+        scanf(" %c", &ch);
+    }
+
+    createadjmatrix(e);
+
+    for (i = 0; i < n; i++) {
+        visited[i] = 0;
+    }
+
+    printf("\nEnter the starting vertex for BFS: ");
+    scanf("%d", &v);
+    f = r = 0;
+    q[r] = v;
+    printf("\nBFS traversal is:\n");
+    visited[v] = 1;
+    printf("%d   ", v);
+    bfs(v);
+    if (r != n - 1)
+        printf("\nBFS is not possible");
+
+    for (i = 0; i < n; i++) {
+        visited[i] = 0;
+    }
+
+    printf("\nEnter the starting vertex for DFS: ");
+    scanf("%d", &v);
+    printf("\nDFS traversal is:\n");
+    visited[v] = 1;
+    printf("%d   ", v);
+    dfs(v);
+    getch();
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+===================LAB-8==============
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+
+struct node {
+    int data;
+
+    struct node *leftChild;
+    struct node *rightChild;
+};
+
+struct node *root = NULL;
+
+void insert(int data) {
+    struct node *tempNode = (struct node *)malloc(sizeof(struct node));
+    struct node *current;
+    struct node *parent;
+
+    tempNode->data = data;
+    tempNode->leftChild = NULL;
+    tempNode->rightChild = NULL;
+
+    if (root == NULL) {
+        root = tempNode;
+    } else {
+        current = root;
+        parent = NULL;
+
+        while (1) {
+            parent = current;
+
+            if (data < parent->data) {
+                current = current->leftChild;
+
+                if (current == NULL) {
+                    parent->leftChild = tempNode;
+                    return;
+                }
+            }
+            else {
+                current = current->rightChild;
+
+                if (current == NULL) {
+                    parent->rightChild = tempNode;
+                    return;
+                }
+            }
+        }
+    }
+}
+
+struct node *search(int data) {
+    struct node *current = root;
+
+    while (current != NULL) {
+        if (data == current->data) {
+            return current; // Node found
+        } else if (data < current->data) {
+            current = current->leftChild;
+        } else {
+            current = current->rightChild;
+        }
+    }
+
+    return NULL; // Node not found
+}
+
+struct node *findMin(struct node *root) {
+    while (root->leftChild != NULL) {
+        root = root->leftChild;
+    }
+    return root;
+}
+
+struct node *deleteNode(struct node *root, int data) {
+    if (root == NULL) {
+        return root;
+    }
+
+    if (data < root->data) {
+        root->leftChild = deleteNode(root->leftChild, data);
+    } else if (data > root->data) {
+        root->rightChild = deleteNode(root->rightChild, data);
+    } else {
+        // Node with only one child or no child
+        if (root->leftChild == NULL) {
+            struct node *temp = root->rightChild;
+            free(root);
+            return temp;
+        } else if (root->rightChild == NULL) {
+            struct node *temp = root->leftChild;
+            free(root);
+            return temp;
+        }
+
+        // Node with two children
+        struct node *temp = findMin(root->rightChild);
+        root->data = temp->data;
+        root->rightChild = deleteNode(root->rightChild, temp->data);
+    }
+
+    return root;
+}
+
+int calculateHeight(struct node *root) {
+    if (root == NULL) {
+        return -1; // Height of an empty tree is -1
+    }
+
+    int leftHeight = calculateHeight(root->leftChild);
+    int rightHeight = calculateHeight(root->rightChild);
+
+    return (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
+}
+
+void inOrderTraversal(struct node *root) {
+    if (root != NULL) {
+        inOrderTraversal(root->leftChild);
+        printf("%d ", root->data);
+        inOrderTraversal(root->rightChild);
+    }
+}
+
+void preOrderTraversal(struct node *root) {
+    if (root != NULL) {
+        printf("%d ", root->data);
+        preOrderTraversal(root->leftChild);
+        preOrderTraversal(root->rightChild);
+    }
+}
+
+void postOrderTraversal(struct node *root) {
+    if (root != NULL) {
+        postOrderTraversal(root->leftChild);
+        postOrderTraversal(root->rightChild);
+        printf("%d ", root->data);
+    }
+}
+
+int main() {
+    int i;
+    int array[7] = {27, 14, 35, 10, 19, 31, 42};
+
+    for (i = 0; i < 7; i++)
+        insert(array[i]);
+
+    printf("\nIn-order traversal: ");
+    inOrderTraversal(root);
+
+    printf("\nPre-order traversal: ");
+    preOrderTraversal(root);
+
+    printf("\nPost-order traversal: ");
+    postOrderTraversal(root);
+
+    int searchData;
+    printf("\nEnter a value to search in the BST: ");
+    scanf("%d", &searchData);
+    struct node *searchResult = search(searchData);
+    if (searchResult != NULL) {
+        printf("Node with value %d found in the BST.\n", searchData);
+    } else {
+        printf("Node with value %d not found in the BST.\n", searchData);
+    }
+
+    int deleteData;
+    printf("\nEnter a value to delete from the BST: ");
+    scanf("%d", &deleteData);
+    root = deleteNode(root, deleteData);
+    printf("BST after deleting %d: ", deleteData);
+    inOrderTraversal(root);
+
+    int height = calculateHeight(root);
+    printf("\nHeight of the BST: %d\n", height+1);
+
+    getch();
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+============LAB-7===================
+#include <stdio.h>
+#include <stdlib.h>
+#include <conio.h>
+struct Node {
+    int salary;
+    struct Node* left;
+    struct Node* right;
+};
+
+struct Node* newNode(int salary) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    node->salary = salary;
+    node->left = node->right = NULL;
+    return node;
+}
+
+struct Node* insert(int arr[], struct Node* root, int i, int n) {
+    if (i < n) {
+        struct Node* temp = newNode(arr[i]);
+        root = temp;
+        root->left = insert(arr, root->left, 2 * i + 1, n);
+        root->right = insert(arr, root->right, 2 * i + 2, n);
+    }
+    return root;
+}
+
+void inOrder(struct Node* root) {
+    if (root != NULL) {
+        inOrder(root->left);
+        printf("%d\t", root->salary);
+        inOrder(root->right);
+    }
+}
+
+void preOrder(struct Node* root) {
+    if (root != NULL) {
+        printf("%d\t", root->salary);
+        preOrder(root->left);
+        preOrder(root->right);
+    }
+}
+
+void postOrder(struct Node* root) {
+    if (root != NULL) {
+        postOrder(root->left);
+        postOrder(root->right);
+        printf("%d\t", root->salary);
+    }
+}
+
+int main() {
+    int levelOrderArr[] = {27000, 14000, 35000, 10000, 19000, 30100, 42000};
+    int n = sizeof(levelOrderArr) / sizeof(levelOrderArr[0]);
+    struct Node* levelOrderRoot = insert(levelOrderArr, levelOrderRoot, 0, n);
+
+    printf("\nInorder traversal (created using level order): ");
+    inOrder(levelOrderRoot);
+    printf("\nPreorder traversal (created using level order): ");
+    preOrder(levelOrderRoot);
+    printf("\nPostorder traversal (created using level order): ");
+    postOrder(levelOrderRoot);
+
+    int depthOrderArr[] = {27000, 14000, 10000, 19000, 35000, 30100, 42000};
+    n = sizeof(depthOrderArr) / sizeof(depthOrderArr[0]);
+    struct Node* depthOrderRoot = insert(depthOrderArr, depthOrderRoot, 0, n);
+
+    printf("\n\nInorder traversal (created using depth order): ");
+    inOrder(depthOrderRoot);
+    printf("\nPreorder traversal (created using depth order): ");
+    preOrder(depthOrderRoot);
+    printf("\nPostorder traversal (created using depth order): ");
+    postOrder(depthOrderRoot);
+
+    getch();
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==============LAB-6==================#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+struct Employee {
+    int id;
+    char name[50];
+    double salary;
+};
+
+void generateRandomData(struct Employee arr[], int size) {
+    srand(time(NULL));
+	int i;
+    for (i = 0; i < size; ++i) {
+        arr[i].id = i + 1;
+        sprintf(arr[i].name, "Employee%d", i + 1);
+        arr[i].salary = rand() % 100000 + 50000; // Generating salary between 50000 and 150000
+    }
+}
+
+void printData(struct Employee arr[], int size) {
+    printf("ID\tName\tSalary\n");
+    int i;
+    for (i = 0; i < size; ++i) {
+        printf("%d\t%s\t%.2f\n", arr[i].id, arr[i].name, arr[i].salary);
+    }
+}
+
+void writeToFile(struct Employee arr[], int size, const char* fileName) {
+    FILE* outputFile = fopen(fileName, "w");
+	int i;
+    for (i = 0; i < size; ++i) {
+        fprintf(outputFile, "%d\t%s\t%.2f\n", arr[i].id, arr[i].name, arr[i].salary);
+    }
+
+    fclose(outputFile);
+}
+
+void merge(struct Employee arr[], int left, int middle, int right, int *indexComparisons, int *elementComparisons) {
+    int n1 = middle - left + 1;
+    int n2 = right - middle;
+	int i,j;
+    struct Employee leftArray[n1], rightArray[n2];
+
+    for ( i = 0; i < n1; i++)
+        leftArray[i] = arr[left + i];
+    for (j = 0; j < n2; j++)
+        rightArray[j] = arr[middle + 1 + j];
+
+    i = 0, j = 0;
+	int k = left;
+
+    while (i < n1 && j < n2) {
+        (*indexComparisons)++;
+        if (leftArray[i].salary <= rightArray[j].salary) {
+            (*elementComparisons)++;
+            arr[k] = leftArray[i];
+            i++;
+        } else {
+            (*elementComparisons)++;
+            arr[k] = rightArray[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        (*elementComparisons)++;
+        arr[k] = leftArray[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        (*elementComparisons)++;
+        arr[k] = rightArray[j];
+        j++;
+        k++;
+    }
+}
+
+void mergeSort(struct Employee arr[], int left, int right, int *indexComparisons, int *elementComparisons) {
+    if (left < right) {
+        int middle = left + (right - left) / 2;
+
+        mergeSort(arr, left, middle, indexComparisons, elementComparisons);
+        mergeSort(arr, middle + 1, right, indexComparisons, elementComparisons);
+
+        merge(arr, left, middle, right, indexComparisons, elementComparisons);
+    }
+}
+
+int partition(struct Employee arr[], int low, int high, int *indexComparisons, int *elementComparisons) {
+    double pivot = arr[high].salary;
+    int i = (low - 1);
+	int j;
+    for (j = low; j <= high - 1; j++) {
+        (*indexComparisons)++;
+        if (arr[j].salary <= pivot) {
+            (*elementComparisons)++;
+            i++;
+            struct Employee temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+        }
+    }
+
+    struct Employee temp = arr[i + 1];
+    arr[i + 1] = arr[high];
+    arr[high] = temp;
+
+    return (i + 1);
+}
+
+void quickSort(struct Employee arr[], int low, int high, int *indexComparisons, int *elementComparisons) {
+    if (low < high) {
+        int pi = partition(arr, low, high, indexComparisons, elementComparisons);
+
+        quickSort(arr, low, pi - 1, indexComparisons, elementComparisons);
+        quickSort(arr, pi + 1, high, indexComparisons, elementComparisons);
+    }
+}
+
+int main() {
+    const int size = 10;
+    struct Employee employees[size];
+
+    generateRandomData(employees, size);
+
+    printf("Unsorted Data:\n");
+    printData(employees, size);
+    printf("\n");
+
+    int mergeIndexComparisons = 0, mergeElementComparisons = 0;
+    mergeSort(employees, 0, size - 1, &mergeIndexComparisons, &mergeElementComparisons);
+
+    printf("Data after Merge Sort:\n");
+    printData(employees, size);
+    printf("Merge Sort Index Comparisons: %d\n", mergeIndexComparisons);
+    printf("Merge Sort Element Comparisons: %d\n\n", mergeElementComparisons);
+
+    writeToFile(employees, size, "merge_sort_output.txt");
+
+    generateRandomData(employees, size);
+
+    printf("Unsorted Data:\n");
+    printData(employees, size);
+    printf("\n");
+
+    int quickIndexComparisons = 0, quickElementComparisons = 0;
+    quickSort(employees, 0, size - 1, &quickIndexComparisons, &quickElementComparisons);
+
+    printf("Data after Quick Sort:\n");
+    printData(employees, size);
+    printf("Quick Sort Index Comparisons: %d\n", quickIndexComparisons);
+    printf("Quick Sort Element Comparisons: %d\n\n", quickElementComparisons);
+
+    writeToFile(employees, size, "quick_sort_output.txt");
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=========================LAB-5======================
+#include <stdio.h>
+#include<conio.h>
+#include "lab5.h"
+
+
+int main() {
+    int n, key,i;
+	char targetName[50];
+    printf("Enter the number of employees: ");
+    scanf("%d", &n);
+
+    Employee employees[n];
+
+    printf("Enter employee details:\n");
+    for (i = 0; i < n; i++) {
+        printf("\n Enter details for employee %d:\n", i + 1);
+        printf("Employee ID: ");
+        scanf("%d", &employees[i].id);
+        printf("Name: ");
+        scanf("%s", employees[i].name);
+        printf("Basic Salary:");
+        scanf("%lf",&employees[i].basicsal);
+    }
+	while(1){
+	
+    printf("\n1. Bubble Sort\n2. Insertion Sort\n3. Name Search\n4. Linear Search\n5. Sentinel Search\n6. Binary Search\n7. Exit\n");
+    printf("Enter your choice: ");
+
+    int choice;
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1: {
+            int bubbleComparisons = 0, bubbleSwaps = 0;
+            bubbleSort(employees, n, &bubbleComparisons, &bubbleSwaps);
+            printf("Bubble Sort:\n");
+            printf("Comparisons: %d\n", bubbleComparisons);
+            printf("Swaps: %d\n", bubbleSwaps);
+            break;
+        }
+        case 2: {
+            int insertionComparisons = 0, insertionSwaps = 0;
+            insertionSort(employees, n, &insertionComparisons, &insertionSwaps);
+            printf("\nInsertion Sort:\n");
+            printf("Comparisons: %d\n", insertionComparisons);
+            printf("Swaps: %d\n", insertionSwaps);
+            break;
+        }
+        case 3:{
+        	int nameElementComparisons = 0, nameIndexComparisons = 0;
+            printf("Enter the employee name to search: ");
+            scanf("%s", targetName);
+            int nameResult = nameSearch(employees, n, targetName, &nameElementComparisons, &nameIndexComparisons);
+            printf("\nName Search:\n");
+            printf("Element Comparisons: %d\n", nameElementComparisons);
+            printf("Index Comparisons: %d\n", nameIndexComparisons);
+            if (nameResult != -1) {
+                printf("Employee found:\n");
+                printEmployee(employees[nameResult]);
+            } else {
+                printf("Employee not found\n");
+            }
+            break;
+		}
+		case 4:{
+            int linearElementComparisons = 0, linearIndexComparisons = 0;
+            printf("Enter the employee ID to search: ");
+            scanf("%d", &key);
+            int linearResult = linearSearch(employees, n, key, &linearElementComparisons, &linearIndexComparisons);
+            printf("\nLinear Search:\n");
+            printf("Element Comparisons: %d\n", linearElementComparisons);
+            printf("Index Comparisons: %d\n", linearIndexComparisons);
+            if (linearResult != -1) {
+                printf("Employee found:\n");
+                printEmployee(employees[linearResult]);
+            } else {
+                printf("Employee not found\n");
+            }
+            break;
+        }
+        case 5: {
+            int sentinelElementComparisons = 0, sentinelIndexComparisons = 0;
+            printf("Enter the employee ID to search: ");
+            scanf("%d", &key);
+            int sentinelResult = sentinelSearch(employees, n, key, &sentinelElementComparisons, &sentinelIndexComparisons);
+            printf("\nSentinel Search:\n");
+            printf("Element Comparisons: %d\n", sentinelElementComparisons);
+            printf("Index Comparisons: %d\n", sentinelIndexComparisons);
+            if (sentinelResult != -1) {
+                printf("Employee found:\n");
+                printEmployee(employees[sentinelResult]);
+            } else {
+                printf("Employee not found\n");
+            }
+            break;
+        }
+        case 6: {
+            int binaryElementComparisons = 0, binaryIndexComparisons = 0;
+            printf("Enter the employee ID to search: ");
+            scanf("%d", &key);
+            int binaryResult = binarySearch(employees, 0, n - 1, key, &binaryElementComparisons, &binaryIndexComparisons);
+            printf("\nBinary Search:\n");
+            printf("Element Comparisons: %d\n", binaryElementComparisons);
+            printf("Index Comparisons: %d\n", binaryIndexComparisons);
+            if (binaryResult != -1) {
+                printf("Employee found:\n");
+                printEmployee(employees[binaryResult]);
+            } else {
+                printf("Employee not found\n");
+            }
+            break;
+        }
+        case 7:{
+			return 0;
+		}
+        default:
+            printf("Invalid choice\n");
+    }
+}
+
+    return 0;
+}
+
+void bubbleSort(Employee arr[], int n, int *comparisons, int *swaps) {
+    int i,j;
+	for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            (*comparisons)++;
+            if (arr[j].id > arr[j + 1].id) {
+                (*swaps)++;
+                Employee temp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = temp;
+            }
+        }
+    }
+}
+
+void insertionSort(Employee arr[], int n, int *comparisons, int *swaps) {
+    int i;
+	for (i = 1; i < n; i++) {
+        Employee key = arr[i];
+        int j = i - 1;
+        (*comparisons)++;
+        while (j >= 0 && arr[j].id > key.id) {
+            (*comparisons)++;
+            (*swaps)++;
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+int linearSearch(Employee arr[], int n, int key, int *elementComparisons, int *indexComparisons) {
+    int i;
+	for (i = 0; i < n; i++) {
+        (*elementComparisons)++;
+        if (arr[i].id == key) {
+            (*indexComparisons)++;
+            return i;
+        }
+        (*indexComparisons)++;
+    }
+    return -1;
+}
+
+int sentinelSearch(Employee arr[], int n, int key, int *elementComparisons, int *indexComparisons) {
+    int last = arr[n - 1].id;
+    arr[n - 1].id = key;
+    int i = 0;
+    while (arr[i].id != key) {
+        (*elementComparisons)++;
+        i++;
+        (*indexComparisons)++;
+    }
+    arr[n - 1].id = last;
+    if (i < n - 1 || arr[n - 1].id == key) {
+        (*indexComparisons)++;
+        return i;
+    }
+    return -1;
+}
+
+int binarySearch(Employee arr[], int low, int high, int key, int *elementComparisons, int *indexComparisons) {
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        (*elementComparisons)++;
+        if (arr[mid].id == key) {
+            (*indexComparisons)++;
+            return mid;
+        }
+        (*indexComparisons)++;
+        if (arr[mid].id < key) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+    return -1;
+}
+
+int nameSearch(Employee arr[], int n, char targetName[], int *elementComparisons, int *indexComparisons) {
+    int i;
+	for (i = 0; i < n; i++) {
+        (*elementComparisons)++;
+        if (strcmp(arr[i].name, targetName) == 0) {
+            (*indexComparisons)++;
+            return i;
+        }
+        (*indexComparisons)++;
+    }
+    return -1;
+}
+void printEmployee(Employee emp) {
+    printf("Employee ID: %d\n", emp.id);
+    printf("Name: %s\n", emp.name);
+    printf("Basic Salary:%lf",emp.basicsal);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================LAB-4=============
+#include <stdio.h>
+#include <stdlib.h>
+#include "que.h"
+
+int main() {
+    struct EmployeeSalaryQueue salaryQueue;
+    initializeQueue(&salaryQueue);
+
+    int choice;
+    char name[50];
+    float salary;
+
+    do {
+        printf("\nEmployee Salary Management System\n");
+        printf("1. Enqueue (Add an Employee)\n");
+        printf("2. Dequeue (Remove an Employee)\n");
+        printf("3. Display Employees\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                getEmployeeDetails(name, &salary);
+                enqueue(&salaryQueue, name, salary);
+                printf("Employee added to the queue.\n");
+                break;
+
+            case 2:
+                if (isEmpty(&salaryQueue)) {
+                    printf("Queue is empty. No employee to dequeue.\n");
+                } else {
+                    struct Employee* dequeuedEmployee = dequeue(&salaryQueue);
+                    printf("Dequeued: Name: %s, Salary: %.2f\n", dequeuedEmployee->name, dequeuedEmployee->salary);
+                    free(dequeuedEmployee);  // Free the memory of the dequeued employee
+                }
+                break;
+
+            case 3:
+                if (isEmpty(&salaryQueue)) {
+                    printf("Queue is empty.\n");
+                } else {
+                    printf("Employee Salary Queue:\n");
+                    display(&salaryQueue);
+                }
+                break;
+
+            case 4:
+                printf("Exiting the program.\n");
+                break;
+
+            default:
+                printf("Invalid choice. Please enter a valid option.\n");
+        }
+
+    } while (choice != 4);
+
+    // Free memory allocated for the queue before exiting
+    freeQueue(&salaryQueue);
+
+    return 0;
+}
+
+void initializeQueue(struct EmployeeSalaryQueue* queue) {
+    queue->front = NULL;
+    queue->rear = NULL;
+}
+
+int isEmpty(struct EmployeeSalaryQueue* queue) {
+    return queue->front == NULL;
+}
+
+void enqueue(struct EmployeeSalaryQueue* queue, const char* name, float salary) {
+    struct Employee* newEmployee = (struct Employee*)malloc(sizeof(struct Employee));
+    if (newEmployee == NULL) {
+        fprintf(stderr, "Memory allocation error\n");
+        exit(EXIT_FAILURE);
+    }
+    snprintf(newEmployee->name, sizeof(newEmployee->name), "%s", name);
+    newEmployee->salary = salary;
+    newEmployee->next = NULL;
+	if (isEmpty(queue)) {
+        queue->front = queue->rear = newEmployee;
+    } else {
+        queue->rear->next = newEmployee;
+        queue->rear = newEmployee;
+    }
+}
+
+struct Employee* dequeue(struct EmployeeSalaryQueue* queue) {
+    if (isEmpty(queue)) {
+        return NULL;
+    }
+
+    struct Employee* dequeuedEmployee = queue->front;
+    queue->front = queue->front->next;
+
+    if (queue->front == NULL) {
+        queue->rear = NULL;
+    }
+
+    return dequeuedEmployee;
+}
+
+struct Employee* peek(struct EmployeeSalaryQueue* queue) {
+    return queue->front;
+}
+
+void display(struct EmployeeSalaryQueue* queue) {
+    struct Employee* current = queue->front;
+    while (current != NULL) {
+        printf("Name: %s, Salary: %.2f\n", current->name, current->salary);
+        current = current->next;
+    }
+}
+
+void freeQueue(struct EmployeeSalaryQueue* queue) {
+    struct Employee* current = queue->front;
+    while (current != NULL) {
+        struct Employee* temp = current;
+        current = current->next;
+        free(temp);
+    }
+}
+
+void getEmployeeDetails(char* name, float* salary) {
+    printf("Enter Employee Name: ");
+    scanf("%s", name);
+
+    printf("Enter Employee Salary: ");
+    scanf("%f", salary);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+LAB-3===================#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include "stackESM.h"
+void pushOperand(float value) {
+    if (operandTop == MAX_SIZE - 1) {
+        printf("Operand Stack Overflow\n");
+        exit(EXIT_FAILURE);
+    }
+    operandStack[++operandTop] = value;
+}
+
+float popOperand() {
+    if (operandTop == -1) {
+        printf("Operand Stack Underflow\n");
+        exit(EXIT_FAILURE);
+    }
+    return operandStack[operandTop--];
+}
+
+int isOperator(char ch) {
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/');
+}
+
+int operatorPrecedence(char ch) {
+    if (ch == '+' || ch == '-')
+        return 1;
+    else if (ch == '*' || ch == '/')
+        return 2;
+    else
+        return 0; // For '('
+}
+
+void infixToPostfixConversion(char infix[]) {
+    char postfix[MAX_SIZE];
+    int i, j = 0;
+    int openParenCount = 0;
+    int closeParenCount = 0;
+
+    for (i = 0; infix[i] != '\0'; i++) {
+        if (isalnum(infix[i]) || infix[i] == '.') {
+            postfix[j++] = infix[i];
+        } else if (infix[i] == '(') {
+            pushOperand(infix[i]);
+            openParenCount++;
+        } else if (infix[i] == ')') {
+            while (operandTop != -1 && operandStack[operandTop] != '(') {
+                postfix[j++] = popOperand();
+            }
+            if (operandTop != -1) {
+                popOperand(); // Discard the '('
+                closeParenCount++;
+            } else {
+                printf("Error: Unmatched closing parenthesis\n");
+                exit(EXIT_FAILURE);
+            }
+        } else if (isOperator(infix[i])) {
+            while (operandTop != -1 && operatorPrecedence(operandStack[operandTop]) >= operatorPrecedence(infix[i])) {
+                postfix[j++] = popOperand();
+            }
+            pushOperand(infix[i]);
+        }
+    }
+
+    // Pop any remaining operators from the stack
+    while (operandTop != -1) {
+        postfix[j++] = popOperand();
+    }
+
+    postfix[j] = '\0';
+
+    if (openParenCount != closeParenCount) {
+        printf("Warning: Unmatched number of parentheses\n");
+    }
+
+    printf("Postfix Expression: %s\n", postfix);
+}
+
+float evaluatePostfixExpression(char postfix[]) {
+    int i;
+    float operand, result;
+    char str[10]; // To store the digits of operands
+
+    for (i = 0; postfix[i] != '\0'; i++) {
+        if (isdigit(postfix[i]) || postfix[i] == '.') {
+            // If it's a digit or a decimal point, accumulate the digits to form the operand
+            int k = 0;
+            while (isdigit(postfix[i]) || postfix[i] == '.') {
+                str[k++] = postfix[i++];
+            }
+            str[k] = '\0';
+            operand = atof(str); // Convert the string to a float
+            i--; // Move the index back one position after forming the operand
+            pushOperand(operand);
+        } else if (isOperator(postfix[i])) {
+            float operand2 = popOperand();
+            float operand1 = popOperand();
+
+            switch (postfix[i]) {
+                case '+':
+                    pushOperand(operand1 + operand2);
+                    break;
+                case '-':
+                    pushOperand(operand1 - operand2);
+                    break;
+                case '*':
+                    pushOperand(operand1 * operand2);
+                    break;
+                case '/':
+                    pushOperand(operand1 / operand2);
+                    break;
+            }
+        }
+    }
+
+    result = popOperand();
+    return result;
+}
+
+int main() {
+    char infix[MAX_SIZE];
+
+    printf("Enter an infix expression for Employee Salary Management: ");
+    scanf("%s", infix);
+
+    infixToPostfixConversion(infix);
+
+    float result = evaluatePostfixExpression(infix);
+    printf("Net Salary: %.2f\n", result);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================LAB-2==================
+#include<stdio.h>
+#include<conio.h>
+#include<stdlib.h>
+#include "ll.h"
+
+struct ll *head=NULL;
+
+int main(){
+	if(head!=NULL){
+		loop();
+		
+	}else{
+		head=newll();
+		loop();
+	}
+}
+ void loop(){
+ 	int choice,pos;
+		char c='n';
+		while(1){
+			system("cls");
+			printf("\n The List:\n");
+			display(head);
+			printf("\n --------------------------------");
+			printf("\n \n 1. Insert In Beginning");
+			printf("\n 2. Insert at End");
+			printf("\n 3. Insert In Between");
+			printf("\n 4. Delete");
+			printf("\n \n Enter your choice:");
+			scanf("%d",&choice);
+			switch(choice){
+				case 1:{
+					inbegin(head);
+					break;
+				}
+				case 2:{
+					inend(head);
+					break;
+				}
+				case 3:{
+					if(count(head)<=1){
+						printf("\n There is only one element in the list and can't insert inbetween");
+						break;
+					}
+					printf("\n Enter the position:(2-%d)",count(head));
+					scanf("%d",&pos);
+					inbetween(head,pos);
+					break;
+				}
+				case 4:{
+					del(head);
+					break;
+				}
+				default:{
+					printf("Invalid Input");
+					break;
+				}
+			}
+			printf("\n\n-------------------------------------------------\n Do you want to continue?(y/n)");
+			c=getch();
+			if(c=='y'||c=='Y'){
+				system("cls");
+			}else{
+				break;
+			}
+ }}
+
+struct ll * newll(){
+	printf("\n The List is Empty!!!!!!");
+	printf("\n A new List is being created---");
+	struct ll *newnode=(struct ll*)malloc(sizeof(struct ll));
+	printf("\n Enter the EmpID:");
+	fflush(stdin);
+	scanf("%d",&newnode->data);
+	printf("\n Enter the Employee Name:");
+	fflush(stdin);
+	scanf("%[^\n]*c",newnode->name);
+	newnode->link=NULL;
+	printf("\n New List created successfully");
+	return newnode;
+}
+void inbegin(struct ll *temp){
+	struct ll *newnode=(struct ll*)malloc(sizeof(struct ll));
+	printf("\n Enter the EmpID:");
+	fflush(stdin);
+	scanf("%d",&newnode->data);
+	printf("\n Enter the Employee Name:");
+	fflush(stdin);
+	scanf("%[^\n]*c",newnode->name);
+	newnode->link=temp;
+	head=newnode;
+	printf("\n Insertion at beginning is Successfull");
+}
+
+void display(struct ll *ptr)
+{
+	while (ptr!=NULL)
+	{
+		printf("%d. %s --->   ", ptr->data,ptr->name);
+		ptr=ptr->link;
+	}
+	printf("NULL\n");
+}
+
+int count(struct ll *temp){
+	int count=0;
+	while(temp!=NULL){
+		count++;
+		temp=temp->link;
+	}
+	return count;
+}
+
+void inend(struct ll *temp){
+	struct ll *newnode=(struct ll *)malloc(sizeof(struct ll));
+	printf("\n Enter the EmpID:");
+	fflush(stdin);
+	scanf("%d",&newnode->data);
+	printf("\n Enter the Employee Name:");
+	fflush(stdin);
+	scanf("%[^\n]*c",newnode->name);
+	newnode->link=NULL;
+	while(temp->link!=NULL){
+		temp=temp->link;
+	}
+	temp->link=newnode;
+	printf("\n Insertion at End is Successfull");
+}
+
+void inbetween(struct ll *temp,int pos){
+	if(1<pos<=(count(head))){	
+		int i;
+		struct ll *newnode=(struct ll*)malloc(sizeof(struct ll));
+		printf("\n Enter the EmpID:");
+		fflush(stdin);
+		scanf("%d",&newnode->data);
+		printf("\n Enter the Employee Name:");
+		fflush(stdin);
+		scanf("%[^\n]*c",newnode->name);
+		for(i=2;i<pos-1;i++){
+			temp=temp->link;
+		}
+		newnode->link=temp->link;
+		temp->link=newnode;
+		printf("\n Insertion inbetween Completed");
+	}
+	else{
+		printf("\n Invalid Position");
+	}
+}
+
+
+void del(struct ll *temp){
+	printf("\n\n Enter the Emp-ID which you wish to delete:");
+	int id;
+	fflush(stdin);
+	scanf("%d",&id);
+	int pos=searchid(id);
+	printf("\n The position of the node is: %d",pos);
+	if(pos<=0){
+		printf("\n Emp-ID doesn't exist to delete");
+	}else if(pos==1){
+		head=head->link;
+		printf("\n\n Successfully removed the first node");
+	}else if(pos==count(head)){
+		delend(head);
+		printf("\n Successfully removed the last node");
+	}else{
+		delbetween(head,pos);
+		printf("\n Successufully removed the node");
+	}
+}
+
+int searchid(int id){
+	int pos=0;
+	struct ll *temp;
+	temp=head;
+	if(id==temp->data){
+		pos=pos+1;
+		return pos;
+	}else{
+		pos++;
+		while (temp!=NULL){
+			temp=temp->link;
+			pos++;
+			if(id==temp->data){
+				return pos;
+			}
+		}
+	}
+}
+
+struct ll * delbegin(struct ll *temp){
+	struct ll *head=NULL;
+	head=temp->link;
+	return head;
+}
+
+void delend(struct ll *t1){
+	struct ll *t2;
+	t2=t1->link;
+	while(t2->link!=NULL){
+		t1=t1->link;
+		t2=t2->link;
+	}
+	t1->link=NULL;
+	free(t2);
+}
+
+void delbetween(struct ll *t1,int pos){
+	struct ll *t2;
+	t2=t1->link;
+	int count=1;
+	while(count<pos-1){
+		t1=t1->link;
+		t2=t2->link;
+		count++;
+	}
+	t1->link=t2->link;
+	free(t2);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+====================LAB-1=============================
+#include <stdio.h>
+#include <string.h>
+#include"functions.h"
+#define MAX_EMPLOYEES 100
+
+struct Employee {
+    int empID;
+    char empName[50];
+    float empSalary;
+};
+
+struct Employee employees[MAX_EMPLOYEES];
+int numEmployees = 0;
+
+int main() {
+	int i,j;
+    int choice;
+    int empID;
+    int searchResult;
+    float matrix1[2][2] = {{1.5, 2.3}, {3.2, 4.9}};
+    float matrix2[2][2] = {{2.2, 1.5}, {4.5, 3.5}};
+    float resultMatrix[2][2];
+
+    do {
+        printf("\nEmployee Salary Management System Menu:\n");
+        printf("1. Insert Employee\n");
+        printf("2. Delete Employee\n");
+        printf("3. Search Employee\n");
+        printf("4. Display Employees\n");
+        printf("5. Add Matrices\n");
+        printf("6. Subtract Matrices\n");
+        printf("7. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                insertEmployee();
+                break;
+            case 2:
+                printf("Enter Employee ID to delete: ");
+                scanf("%d", &empID);
+                deleteEmployee(empID);
+                break;
+            case 3:
+                printf("Enter Employee ID to search: ");
+                scanf("%d", &empID);
+                searchResult = linearSearchEmployee(empID);
+                if (searchResult != -1) {
+                    printf("Employee found at index %d\n", searchResult);
+                } else {
+                    printf("Employee not found.\n");
+                }
+                break;
+            case 4:
+                displayEmployees();
+                break;
+            case 5:
+                addMatrix(matrix1, matrix2, resultMatrix);
+                printf("Result of Matrix Addition:\n");
+                for (i = 0; i < 2; i++) {
+                    for (j = 0; j < 2; j++) {
+                        printf("%.2f\t", resultMatrix[i][j]);
+                    }
+                    printf("\n");
+                }
+                break;
+            case 6:
+                subtractMatrix(matrix1, matrix2, resultMatrix);
+                printf("Result of Matrix Subtraction:\n");
+                for (i = 0; i < 2; i++) {
+                    for (j = 0; j < 2; j++) {
+                        printf("%.2f\t", resultMatrix[i][j]);
+                    }
+                    printf("\n");
+                }
+                break;
+            case 7:
+                printf("Exiting program. Goodbye!\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while (choice != 7);
+
+    return 0;
+}
+void insertEmployee() {
+    if (numEmployees < MAX_EMPLOYEES) {
+        struct Employee newEmployee;
+        printf("Enter Employee ID: ");
+        scanf("%d", &newEmployee.empID);
+        printf("Enter Employee Name: ");
+        scanf("%s", newEmployee.empName);
+        printf("Enter Employee Salary: ");
+        scanf("%f", &newEmployee.empSalary);
+
+        employees[numEmployees] = newEmployee;
+        numEmployees++;
+        printf("Employee inserted successfully!\n");
+    } else {
+        printf("Maximum number of employees reached.\n");
+    }
+}
+
+void deleteEmployee(int empID) {
+	int i,j;
+    for (i = 0; i < numEmployees; i++) {
+        if (employees[i].empID == empID) {
+            for (j = i; j < numEmployees - 1; j++) {
+                employees[j] = employees[j + 1];
+            }
+            numEmployees--;
+            printf("Employee with ID %d deleted successfully!\n", empID);
+            return;
+        }
+    }
+    printf("Employee with ID %d not found.\n", empID);
+}
+
+int linearSearchEmployee(int empID) {
+	int i;
+    for (i = 0; i < numEmployees; i++) {
+        if (employees[i].empID == empID) {
+            return i;
+        }
+    }
+    return -1; // Employee not found
+}
+
+void displayEmployees() {
+	int i;
+    printf("Employee List:\n");
+    printf("ID\tName\tSalary\n");
+    for (i = 0; i < numEmployees; i++) {
+        printf("%d\t%s\t%.2f\n", employees[i].empID, employees[i].empName, employees[i].empSalary);
+    }
+}
+
+void addMatrix(float matrix1[][2], float matrix2[][2], float result[][2]) {
+	int i,j;
+    for (i = 0; i < 2; i++) {
+        for (j = 0; j < 2; j++) {
+            result[i][j] = matrix1[i][j] + matrix2[i][j];
+        }
+    }
+}
+
+void subtractMatrix(float matrix1[][2], float matrix2[][2], float result[][2]) {
+	int i,j;
+    for (i = 0; i < 2; i++) {
+        for (j = 0; j < 2; j++) {
+            result[i][j] = matrix1[i][j] - matrix2[i][j];
+        }
+    }
+}
+
